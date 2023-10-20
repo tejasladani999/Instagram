@@ -4,9 +4,9 @@ const mongoose = require('mongoose')
 const User = mongoose.model("User")
 const bcrypt = require('bcryptjs')
 
-router.get('/',(req,res) => {
-    res.send("Welcome to Goa")
-})
+// router.get('/',(req,res) => {
+//     res.send("Welcome to Goa")
+// })
 
 router.post('/signup',(req,res) =>{
     const {name,email,password} = req.body
@@ -41,6 +41,34 @@ router.post('/signup',(req,res) =>{
     .catch(err=>{
         console.log(err);
     })
+})
+
+router.post('/signin',(req,res)=>{
+    const {email,password}=req.body;
+    if(!email || !password)
+    {
+        return res.status(422).json({error:"please enter email and password"})
+    }
+    else{
+        User.findOne({email:email})
+        .then(savedUser =>{
+            if (!savedUser){
+                return res.status(422).json({error:"Invalid credential!"})
+            }
+            bcrypt.compare(password,savedUser.password)
+            .then(doMatch =>{
+                if(!doMatch){
+                   return res.status(422).json({error:"Invalid password!"})
+                }
+                else{
+                    return res.json({message:"Welcome to Goa Singham"})
+                }
+            })
+            .catch(err =>{
+                console.log(err);
+            })
+        })
+    }
 })
 
 module.exports = router
