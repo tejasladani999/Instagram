@@ -3,10 +3,14 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const User = mongoose.model("User")
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const {JWT_SECRET} = require('../keys')
+const  requireLogin = require('../middleware/requireLogin')
 
-// router.get('/',(req,res) => {
-//     res.send("Welcome to Goa")
-// })
+router.get('/protect',requireLogin,(req,res) => {
+    
+    res.send("Welcome to Goa")
+})
 
 router.post('/signup',(req,res) =>{
     const {name,email,password} = req.body
@@ -61,7 +65,8 @@ router.post('/signin',(req,res)=>{
                    return res.status(422).json({error:"Invalid password!"})
                 }
                 else{
-                    return res.json({message:"Welcome to Goa Singham"})
+                    const token = jwt.sign({id:savedUser._id},JWT_SECRET)
+                    return res.json({token:token})
                 }
             })
             .catch(err =>{
