@@ -2,20 +2,22 @@ const jwt = require('jsonwebtoken')
 const {JWT_SECRET} = require('../keys')
 const mongoose = require('mongoose')
 const User = mongoose.model("User")
-module.exports = (req,res,next) =>{
-    const { authorization} = req.headers
+module.exports = (req,res,next)=>{
+    const {authorization} = req.headers
     if (!authorization){
-        return res.status(422).json({erro:"please Login first!"})
+        return res.status(401).json({erro:"please Login first!"}) 
     }
     const token = authorization.replace("Bearer ","")
-    jwt.verify(token,JWT_SECRET,(err,payload) =>{
+    jwt.verify(token,JWT_SECRET,(err,payload)=>{
         if(err){
-            return res.status(422).json({err:"please Login first!"})
+            return res.status(401).json({err:"please Login first!"})
         }
-        const  {_id} = payload
-        User.findById(_id).then(userdata =>{
+
+        const  {id} = payload
+
+        User.findById(id).then(userdata =>{
             req.user = userdata
+            next()
         })
-        next()
     })
 }
