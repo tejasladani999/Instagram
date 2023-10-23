@@ -23,3 +23,13 @@
   border-bottom: 1px solid #2744e6 !important;
   box-shadow: 0 1px 0 0 #2744e6 !important;
 }
+
+.userpost{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+
+}
+.item{
+  width: 30%;
+}
