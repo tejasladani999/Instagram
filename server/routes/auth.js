@@ -66,7 +66,8 @@ router.post('/signin',(req,res)=>{
                 }
                 else{
                     const token = jwt.sign({id:savedUser._id},JWT_SECRET)
-                    return res.json({token:token})
+                    const {_id,name,email} = savedUser
+                    return res.json({token,user:{_id,name,email}})
                 }
             })
             .catch(err =>{
