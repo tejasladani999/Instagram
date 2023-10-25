@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import {useNavigate } from 'react-router-dom'
 import M from 'materialize-css'
 
@@ -8,6 +8,37 @@ function CreatePost() {
     const [image,setImage] = useState("")
     const [url,setUrl] = useState("")
     const navigate = useNavigate()
+
+    useEffect(()=>{
+      if(url){
+        fetch("/createpost",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+localStorage.getItem('jwt')
+          },
+          body:JSON.stringify({
+            title,
+            body,
+            pic:url
+          })
+        })
+        .then(res=>res.json())
+        .then(data=>{
+          console.log(data)
+            if(data.error){
+                M.toast({html: data.error,classes:"red darken-3"})
+            }
+            else{
+                M.toast({html:"post uploaded successfully...", classes:"green lighten-1"})
+                navigate('/');
+            }
+        })
+        .catch(err =>{
+            console.log(err)
+        })
+      }
+    },[url])
 
     const postDetails = () =>{
         const data = new FormData()
@@ -26,31 +57,6 @@ function CreatePost() {
             console.log(err)
         })
         
-        fetch("/createpost",{
-            method:"POST",
-            headers:{
-              "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-              title,
-              body,
-              pic:url
-            })
-          })
-          .then(res=>res.json())
-          .then(data=>{
-            console.log(data)
-              if(data.error){
-                  M.toast({html: data.error,classes:"red darken-3"})
-              }
-              else{
-                  M.toast({html:"post uploaded successfully...", classes:"green lighten-1"})
-                  navigate('/');
-              }
-          })
-          .catch(err =>{
-              console.log(err)
-          })
     }
   return (
     <div className='card input-feild' style={{margin:"30px auto",maxWidth:"500px",padding:"20px",textAlign:"center"}}>
