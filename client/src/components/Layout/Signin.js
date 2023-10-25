@@ -46,7 +46,7 @@ const Signin = () => {
             <input type="password" placeholder='password' value={password} onChange={(e)=>setPassword(e.target.value)}/>
             <button className='btn waves-effect deep-orange lighten-1 waves-light' onClick={()=> PostData()}>Login</button>
             <h6>
-              Don't have an Account? <Link to="/singup">sign up</Link>
+              Don't have an Account? <Link to="/signup">signup</Link>
             </h6>
         </div>
     </div>
