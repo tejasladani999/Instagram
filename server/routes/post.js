@@ -7,6 +7,7 @@ const Post = mongoose.model('Post')
 router.get('/allpost',(req, res) => {
     Post.find()
     .populate("postedBy","id name")
+    .populate("comments.postedBy","_id name")
     .then(posts=>{
         res.json({posts})
     })
@@ -70,4 +71,23 @@ router.put('/like',requireLogin,(req,res)=>{
         });
         })
 
+        router.put('/comment',requireLogin,(req,res)=>{
+            const comment = {
+                text:req.body.text,
+                postedBy:req.user._id
+            }
+            Post.findByIdAndUpdate(req.body.postId,{
+                $push:{comments:comment}
+            },{
+                new:true
+            })
+            .populate("comments.postedBy","_id name")
+            .populate("postedBy","_id name")            
+            .then(result => {
+                res.json(result);
+            })
+            .catch(err => {
+                return res.status(422).json({ error: err });
+            });
+            })
     module.exports = router
