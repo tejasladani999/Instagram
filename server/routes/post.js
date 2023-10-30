@@ -58,36 +58,55 @@ router.put('/like',requireLogin,(req,res)=>{
     });
     })
 
-    router.put('/unlike',requireLogin,(req,res)=>{
-        Post.findByIdAndUpdate(req.body.postId,{
-            $pull:{likes:req.user._id}
-        },{
-            new:true
-        }).then(result => {
-            res.json(result);
-        })
-        .catch(err => {
-            return res.status(422).json({ error: err });
-        });
-        })
+router.put('/unlike',requireLogin,(req,res)=>{
+    Post.findByIdAndUpdate(req.body.postId,{
+        $pull:{likes:req.user._id}
+    },{
+        new:true
+    }).then(result => {
+        res.json(result);
+    })
+    .catch(err => {
+        return res.status(422).json({ error: err });
+    });
+    })
 
-        router.put('/comment',requireLogin,(req,res)=>{
-            const comment = {
-                text:req.body.text,
-                postedBy:req.user._id
-            }
-            Post.findByIdAndUpdate(req.body.postId,{
-                $push:{comments:comment}
-            },{
-                new:true
+router.put('/comment',requireLogin,(req,res)=>{
+    const comment = {
+        text:req.body.text,
+        postedBy:req.user._id
+    }
+    Post.findByIdAndUpdate(req.body.postId,{
+        $push:{comments:comment}
+    },{
+        new:true
+    })
+    .populate("comments.postedBy","_id name")
+    .populate("postedBy","_id name")            
+    .then(result => {
+        res.json(result);
+    })
+    .catch(err => {
+        return res.status(422).json({ error: err });
+    });
+    })
+
+router.delete('/deletepost/:postId',requireLogin,(req,res)=>{
+    Post.findOne({_id:req.param.postId})
+    .populate("postedBy","_id")
+    .then((post) => {
+        if (!post){
+            return res.status(422).json({error:"Post not found"});
+        }
+        if(post.postedBy._id.toString() === req.user._id.toString()){
+            post.remove()
+            .then(result=>{
+                res.json({result})
             })
-            .populate("comments.postedBy","_id name")
-            .populate("postedBy","_id name")            
-            .then(result => {
-                res.json(result);
+            .catch(err=>{
+                console.log(err);
             })
-            .catch(err => {
-                return res.status(422).json({ error: err });
-            });
-            })
+        }
+    })
+})
     module.exports = router
