@@ -91,22 +91,28 @@ router.put('/comment',requireLogin,(req,res)=>{
     });
     })
 
-router.delete('/deletepost/:postId',requireLogin,(req,res)=>{
-    Post.findOne({_id:req.param.postId})
-    .populate("postedBy","_id")
-    .then((post) => {
-        if (!post){
-            return res.status(422).json({error:"Post not found"});
-        }
-        if(post.postedBy._id.toString() === req.user._id.toString()){
-            post.remove()
-            .then(result=>{
-                res.json({result})
-            })
-            .catch(err=>{
-                console.log(err);
-            })
-        }
-    })
-})
+    router.delete('/deletepost/:postId', requireLogin, (req, res) => {
+        Post.findOne({ _id: req.params.postId })
+          .populate("postedBy", "_id")
+          .then((post) => {
+            if (!post) {
+              return res.status(422).json({ error: "Post not found" });
+            }
+            if (post.postedBy._id.toString() === req.user._id.toString()) {
+              Post.findByIdAndRemove(req.params.postId)
+                .then((result) => {
+                  res.json({ result });
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            } else {
+              return res.status(422).json({ error: "You are not authorized to delete this post" });
+            }
+          })
+          .catch((err) => {
+            return res.status(422).json({ error: err });
+          });
+      });
+      
     module.exports = router
