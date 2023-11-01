@@ -1,7 +1,7 @@
-const mongoos =require('mongoose')
+const mongoose = require('mongoose')
 const {ObjectId} = mongoose.Schema.Types
 
-const userScema = new mongoos.Schema({
+const userScema = new mongoose.Schema({
     name:{
         type:String,
         required:true
@@ -24,4 +24,4 @@ const userScema = new mongoos.Schema({
     }]
 })
 
-mongoos.model("User",userScema)
+mongoose.model("User",userScema)
