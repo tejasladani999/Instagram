@@ -1,6 +1,6 @@
 # Instagram
 
-A full-stack Instagram clone built with React.js, Node.js, and MongoDB.
+A full-stack Instagram clone built with React.js, Node.js, and MongoDB. for Practice.
 
 ## Introduction
 
